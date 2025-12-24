@@ -80,12 +80,21 @@
                                     <th>Judul Berita</th>
                                     <th width="120">Kategori</th>
                                     <th width="150">Penulis</th>
-                                    <th width="120">Tanggal</th>
+                                    <th width="150">Tanggal & Waktu</th>
                                     <th width="150" class="text-center pe-4">Aksi</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @foreach($blogs as $index => $blog)
+                                @php
+                                    // Format waktu menggunakan data dari controller
+                                    $waktu = isset($blog['waktu']) ? $blog['waktu'] : [
+                                        'date' => date('d M Y', strtotime($blog['created_at'])),
+                                        'time' => date('H:i', strtotime($blog['created_at'])),
+                                        'date_time' => date('d M Y, H:i', strtotime($blog['created_at'])) . ' WIB',
+                                        'relative' => 'Baru saja'
+                                    ];
+                                @endphp
                                 <tr class="border-bottom">
                                     <td class="text-center ps-4">
                                         <span class="badge bg-light text-dark fw-normal rounded-circle d-inline-flex align-items-center justify-content-center" style="width: 28px; height: 28px;">
@@ -120,8 +129,15 @@
                                     </td>
                                     <td>
                                         <div class="d-flex flex-column">
-                                            <span class="text-dark fw-medium">{{ date('d M Y', strtotime($blog['created_at'])) }}</span>
-                                            <small class="text-muted">{{ date('H:i', strtotime($blog['created_at'])) }} WIB</small>
+                                            <span class="text-dark fw-medium waktu-date" data-waktu="{{ $blog['created_at'] }}">
+                                                {{ $waktu['date'] }}
+                                            </span>
+                                            <small class="text-muted waktu-time" data-waktu="{{ $blog['created_at'] }}">
+                                                {{ $waktu['time'] }} WIB
+                                            </small>
+                                            <small class="text-muted mt-1 waktu-relative" data-waktu="{{ $blog['created_at'] }}">
+                                                {{ $waktu['relative'] }}
+                                            </small>
                                         </div>
                                     </td>
                                     <td class="text-center pe-4">
@@ -372,6 +388,17 @@
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     }
 
+    /* Waktu styling */
+    .waktu-relative {
+        font-size: 0.75rem;
+        color: #6c757d;
+        background: #f8f9fa;
+        padding: 0.1rem 0.4rem;
+        border-radius: 4px;
+        display: inline-block;
+        margin-top: 2px;
+    }
+
     /* Footer Styling */
     footer {
         background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%) !important;
@@ -444,7 +471,8 @@
             background: #f8fafc;
         }
     }
-        
+
+    @media (max-width: 768px) {
         header .logo img {
             height: 50px !important;
         }
@@ -455,6 +483,16 @@
         
         .footer-spacer {
             height: 80px;
+        }
+        
+        .table td, .table th {
+            padding: 0.75rem 0.5rem;
+        }
+        
+        .btn-icon {
+            width: 32px;
+            height: 32px;
+            font-size: 0.875rem;
         }
     }
 
@@ -492,8 +530,131 @@
 
 @push('scripts')
 <script>
+    // Fungsi untuk format waktu Indonesia (WIB)
+    function formatWaktuIndonesiaJS(dateString) {
+        if (!dateString) {
+            return {
+                date: 'N/A',
+                time: 'N/A',
+                date_time: 'N/A',
+                relative: 'N/A',
+                days: 0,
+                hours: 0
+            };
+        }
+        
+        try {
+            // Parse tanggal dari string - asumsikan sudah dalam WIB dari controller
+            const date = new Date(dateString);
+            
+            // Format bulan Indonesia untuk JavaScript
+            const bulanIndonesia = {
+                'Jan': 'Jan', 'Feb': 'Feb', 'Mar': 'Mar', 'Apr': 'Apr',
+                'May': 'Mei', 'Jun': 'Jun', 'Jul': 'Jul', 'Aug': 'Ags',
+                'Sep': 'Sep', 'Oct': 'Okt', 'Nov': 'Nov', 'Dec': 'Des'
+            };
+            
+            // Format tanggal (d MMM YYYY) - SAMA DENGAN CONTROLLER
+            const formattedDate = date.toLocaleDateString('id-ID', {
+                day: '2-digit',
+                month: 'short',
+                year: 'numeric',
+                timeZone: 'Asia/Jakarta'
+            });
+            
+            // Format waktu (HH:MM)
+            const formattedTime = date.toLocaleTimeString('id-ID', {
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: false,
+                timeZone: 'Asia/Jakarta'
+            });
+            
+            // Konversi bulan ke bahasa Indonesia
+            let dateFormatted = formattedDate;
+            Object.keys(bulanIndonesia).forEach(en => {
+                if (dateFormatted.includes(en)) {
+                    dateFormatted = dateFormatted.replace(en, bulanIndonesia[en]);
+                }
+            });
+            
+            // Hitung waktu relatif
+            const now = new Date();
+            const diffMs = now - date;
+            const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+            const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+            
+            // Format relatif
+            let relativeText = '';
+            if (diffDays === 0) {
+                relativeText = 'Hari ini';
+            } else if (diffDays === 1) {
+                relativeText = 'Kemarin';
+            } else if (diffDays <= 7) {
+                relativeText = diffDays + ' hari lalu';
+            } else {
+                relativeText = diffDays + ' hari lalu';
+            }
+            
+            return {
+                date: dateFormatted,
+                time: formattedTime,
+                date_time: dateFormatted + ', ' + formattedTime + ' WIB',
+                relative: relativeText,
+                days: diffDays,
+                hours: diffHours
+            };
+        } catch (error) {
+            console.error('Error formatting date:', error, dateString);
+            return {
+                date: 'N/A',
+                time: 'N/A',
+                date_time: 'N/A',
+                relative: 'N/A',
+                days: 0,
+                hours: 0
+            };
+        }
+    }
+
+    // Update semua waktu di halaman
+    function updateSemuaWaktu() {
+        // Update tanggal
+        document.querySelectorAll('.waktu-date').forEach(function(element) {
+            const waktuString = element.getAttribute('data-waktu');
+            if (waktuString) {
+                const formatted = formatWaktuIndonesiaJS(waktuString);
+                element.textContent = formatted.date;
+            }
+        });
+        
+        // Update waktu
+        document.querySelectorAll('.waktu-time').forEach(function(element) {
+            const waktuString = element.getAttribute('data-waktu');
+            if (waktuString) {
+                const formatted = formatWaktuIndonesiaJS(waktuString);
+                element.textContent = formatted.time + ' WIB';
+            }
+        });
+        
+        // Update waktu relatif
+        document.querySelectorAll('.waktu-relative').forEach(function(element) {
+            const waktuString = element.getAttribute('data-waktu');
+            if (waktuString) {
+                const formatted = formatWaktuIndonesiaJS(waktuString);
+                element.textContent = formatted.relative;
+            }
+        });
+    }
+
     // Initialize tooltips
     document.addEventListener('DOMContentLoaded', function() {
+        // Update waktu pertama kali
+        updateSemuaWaktu();
+        
+        // Update waktu setiap menit
+        setInterval(updateSemuaWaktu, 60000);
+        
         // Tooltips
         var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
         var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
@@ -585,6 +746,39 @@
                 header.style.boxShadow = '0 4px 20px rgba(0, 0, 0, 0.15)';
             }
         });
+        
+        // Debug function untuk melihat konversi waktu
+        window.debugBlogAdminWaktu = function() {
+            console.log('=== DEBUG WAKTU ADMIN BLOG ===');
+            
+            // Ambil data dari elemen
+            document.querySelectorAll('tr').forEach(function(row, index) {
+                const waktuDate = row.querySelector('.waktu-date');
+                const waktuTime = row.querySelector('.waktu-time');
+                const waktuRelative = row.querySelector('.waktu-relative');
+                
+                if (waktuDate) {
+                    const waktuString = waktuDate.getAttribute('data-waktu');
+                    const formatted = formatWaktuIndonesiaJS(waktuString);
+                    
+                    console.log(`Blog ${index + 1}:`);
+                    console.log(`- Original: ${waktuString}`);
+                    console.log(`- Date: ${waktuDate.textContent} -> ${formatted.date}`);
+                    console.log(`- Time: ${waktuTime.textContent} -> ${formatted.time} WIB`);
+                    console.log(`- Relative: ${waktuRelative.textContent} -> ${formatted.relative}`);
+                    console.log('---');
+                }
+            });
+            
+            // Log waktu sekarang
+            const now = new Date();
+            const nowWIB = new Date(now.getTime() + (7 * 60 * 60 * 1000)); // UTC+7
+            console.log('Waktu sekarang (Local):', now.toLocaleString());
+            console.log('Waktu sekarang (WIB):', nowWIB.toLocaleString());
+        };
+        
+        // Jalankan debug (opsional)
+        // window.debugBlogAdminWaktu();
     });
 </script>
 @endpush

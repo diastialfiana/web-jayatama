@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
+use Carbon\Carbon;
 
 class BlogController extends Controller
 {
@@ -30,11 +31,101 @@ class BlogController extends Controller
         }
     }
 
+    // Helper function untuk format waktu Indonesia (WIB)
+    private function formatWaktuIndonesia($datetime)
+    {
+        if (!$datetime) {
+            return [
+                'date' => 'N/A', 
+                'time' => 'N/A', 
+                'date_time' => 'N/A',
+                'month_day' => 'N/A',
+                'relative' => 'N/A',
+                'days' => 0,
+                'hours' => 0
+            ];
+        }
+        
+        try {
+            $carbon = Carbon::parse($datetime);
+            
+            // Tentukan timezone
+            if ($carbon->getTimezone()->getName() === 'UTC') {
+                $carbon->addHours(7); // Konversi UTC ke WIB (Asia/Jakarta)
+            }
+            
+            // Atau langsung set timezone ke Asia/Jakarta
+            $carbon->setTimezone('Asia/Jakarta');
+            
+            $now = Carbon::now('Asia/Jakarta');
+            $days = $carbon->diffInDays($now);
+            
+            // Format bulan Indonesia
+            $bulanIndonesia = [
+                'Jan' => 'Jan', 'Feb' => 'Feb', 'Mar' => 'Mar', 'Apr' => 'Apr',
+                'May' => 'Mei', 'Jun' => 'Jun', 'Jul' => 'Jul', 'Aug' => 'Ags',
+                'Sep' => 'Sep', 'Oct' => 'Okt', 'Nov' => 'Nov', 'Dec' => 'Des'
+            ];
+            
+            // Format tanggal lengkap (25 Des 2023)
+            $formattedDate = $carbon->format('d M Y');
+            foreach ($bulanIndonesia as $en => $id) {
+                $formattedDate = str_replace($en, $id, $formattedDate);
+            }
+            
+            // Format bulan-hari saja (25 Des)
+            $monthDay = $carbon->format('d M');
+            foreach ($bulanIndonesia as $en => $id) {
+                $monthDay = str_replace($en, $id, $monthDay);
+            }
+            
+            // Waktu relatif
+            $relativeText = '';
+            if ($days === 0) {
+                $relativeText = 'Hari ini';
+            } elseif ($days === 1) {
+                $relativeText = 'Kemarin';
+            } elseif ($days <= 7) {
+                $relativeText = $days . ' hari lalu';
+            } else {
+                $relativeText = $days . ' hari lalu';
+            }
+            
+            return [
+                'date' => $formattedDate,
+                'time' => $carbon->format('H:i'),
+                'date_time' => $formattedDate . ', ' . $carbon->format('H:i') . ' WIB',
+                'date_time_full' => $carbon->format('d/m/Y H:i') . ' WIB',
+                'month_day' => $monthDay,
+                'relative' => $relativeText,
+                'days' => $days,
+                'hours' => $carbon->diffInHours($now),
+                'carbon' => $carbon
+            ];
+        } catch (\Exception $e) {
+            return [
+                'date' => 'N/A', 
+                'time' => 'N/A', 
+                'date_time' => 'N/A',
+                'month_day' => 'N/A',
+                'relative' => 'N/A',
+                'days' => 0,
+                'hours' => 0
+            ];
+        }
+    }
+
     // Frontend: List semua blog
     public function index()
     {
         $blogs = json_decode(File::get($this->blogFile), true);
         $blogs = $blogs ? array_reverse($blogs) : []; // Terbaru duluan
+        
+        // Tambahkan formatted time untuk setiap blog
+        $blogs = array_map(function($blog) {
+            $blog['waktu'] = $this->formatWaktuIndonesia($blog['created_at']);
+            return $blog;
+        }, $blogs);
         
         return view('pages.blog', compact('blogs'));
     }
@@ -53,6 +144,9 @@ class BlogController extends Controller
         if (!$blog) {
             abort(404);
         }
+        
+        // Tambahkan formatted time
+        $blog['waktu'] = $this->formatWaktuIndonesia($blog['created_at']);
         
         return view('pages.blog-detail', compact('blog'));
     }
@@ -100,6 +194,12 @@ class BlogController extends Controller
         $blogs = json_decode(File::get($this->blogFile), true);
         $blogs = $blogs ? array_reverse($blogs) : [];
         
+        // Tambahkan formatted time untuk setiap blog
+        $blogs = array_map(function($blog) {
+            $blog['waktu'] = $this->formatWaktuIndonesia($blog['created_at']);
+            return $blog;
+        }, $blogs);
+        
         return view('admin.blog.index', compact('blogs'));
     }
 
@@ -110,7 +210,7 @@ class BlogController extends Controller
         return view('admin.blog.create');
     }
 
-    // Admin: Store blog
+    // Admin: Store blog - PERBAIKAN: Simpan waktu dalam format yang benar
     public function store(Request $request)
     {
         $this->checkAdmin();
@@ -136,6 +236,9 @@ class BlogController extends Controller
             $request->image->move(public_path('assets/img/blog'), $imageName);
         }
         
+        // Simpan waktu dengan timezone Indonesia (WIB)
+        $now = Carbon::now('Asia/Jakarta');
+        
         $newBlog = [
             'id' => uniqid(),
             'title' => $request->title,
@@ -145,8 +248,8 @@ class BlogController extends Controller
             'category' => $request->category,
             'author' => $request->author,
             'image' => $imageName ? 'assets/img/blog/' . $imageName : 'assets/img/blog/default.jpg',
-            'created_at' => date('Y-m-d H:i:s'),
-            'updated_at' => date('Y-m-d H:i:s')
+            'created_at' => $now->toDateTimeString(), // Simpan dalam format WIB
+            'updated_at' => $now->toDateTimeString()
         ];
         
         $blogs[] = $newBlog;
@@ -172,10 +275,13 @@ class BlogController extends Controller
             abort(404);
         }
         
+        // Tambahkan formatted time
+        $blog['waktu'] = $this->formatWaktuIndonesia($blog['created_at']);
+        
         return view('admin.blog.edit', compact('blog'));
     }
 
-    // Admin: Update blog
+    // Admin: Update blog - PERBAIKAN: Update waktu dengan format yang benar
     public function update(Request $request, $id)
     {
         $this->checkAdmin();
@@ -212,6 +318,9 @@ class BlogController extends Controller
                 
                 $slug = Str::slug($request->title) . '-' . time();
                 
+                // Update waktu dengan timezone Indonesia (WIB)
+                $now = Carbon::now('Asia/Jakarta');
+                
                 $blogs[$key] = [
                     'id' => $id,
                     'title' => $request->title,
@@ -221,8 +330,8 @@ class BlogController extends Controller
                     'category' => $request->category,
                     'author' => $request->author,
                     'image' => $imageName,
-                    'created_at' => $blog['created_at'],
-                    'updated_at' => date('Y-m-d H:i:s')
+                    'created_at' => $blog['created_at'], // Pertahankan waktu pembuatan asli
+                    'updated_at' => $now->toDateTimeString() // Update waktu dengan WIB
                 ];
                 
                 break;
@@ -260,5 +369,35 @@ class BlogController extends Controller
         File::put($this->blogFile, json_encode($newBlogs, JSON_PRETTY_PRINT));
         
         return redirect()->route('admin.blog.index')->with('success', 'Berita berhasil dihapus');
+    }
+    
+    // Fungsi helper untuk testing waktu
+    public function debugWaktu()
+    {
+        $blogs = json_decode(File::get($this->blogFile), true);
+        
+        echo "<pre>";
+        echo "=== DEBUG WAKTU BLOG ===\n\n";
+        
+        if ($blogs) {
+            foreach ($blogs as $index => $blog) {
+                echo "Blog #" . ($index + 1) . "\n";
+                echo "ID: " . $blog['id'] . "\n";
+                echo "Judul: " . $blog['title'] . "\n";
+                echo "Created At (Original): " . $blog['created_at'] . "\n";
+                
+                $waktu = $this->formatWaktuIndonesia($blog['created_at']);
+                echo "Formatted: " . $waktu['date_time'] . "\n";
+                echo "Relative: " . $waktu['relative'] . "\n";
+                echo "---\n";
+            }
+        } else {
+            echo "Tidak ada data blog\n";
+        }
+        
+        echo "\nWaktu server sekarang: " . date('Y-m-d H:i:s') . "\n";
+        echo "Waktu WIB sekarang: " . Carbon::now('Asia/Jakarta')->format('Y-m-d H:i:s') . "\n";
+        echo "Timezone server: " . date_default_timezone_get() . "\n";
+        echo "</pre>";
     }
 }

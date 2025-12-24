@@ -1,8 +1,8 @@
 @extends('layouts.app')
 
-@section('title', 'Kontak - Jayatama')
-@section('description', 'Hubungi PT Jasa Swadaya Utama (Jayatama) untuk konsultasi layanan tenaga kerja profesional.')
-@section('keywords', 'Kontak Jayatama, Alamat, Telepon, Email, Hubungi Kami')
+@section('title', 'Kontak & Pengaduan - Jayatama')
+@section('description', 'Hubungi PT Jasa Swadaya Utama (Jayatama) untuk konsultasi layanan tenaga kerja profesional atau kirim pengaduan.')
+@section('keywords', 'Kontak Jayatama, Pengaduan, Alamat, Telepon, Email, Hubungi Kami')
 @section('body-class', 'contact-page')
 
 @section('content')
@@ -11,11 +11,11 @@
     <!-- Page Title -->
     <div class="page-title dark-background" style="background-image: url({{ asset('assets/img/page-title-bg.jpg') }}); margin-top: -80px;">
         <div class="container position-relative" style="padding-top: 40px;">
-            <h1>Kontak</h1>
+            <h1>Kontak & Pengaduan</h1>
             <nav class="breadcrumbs">
                 <ol>
                     <li><a href="{{ route('home') }}">Beranda</a></li>
-                    <li class="current">Kontak</li>
+                    <li class="current">Kontak & Pengaduan</li>
                 </ol>
             </nav>
         </div>
@@ -66,39 +66,111 @@
                 </div><!-- End Google Maps -->
 
                 <div class="col-lg-6">
-                    <form action="{{ route('contact.submit') }}" method="post" class="php-email-form" data-aos="fade-up"
-                        data-aos-delay="400" id="contactForm">
-                        @csrf
-                        <div class="row gy-4">
-                            <div class="col-md-6">
-                                <input type="text" name="name" class="form-control" placeholder="Nama Lengkap" required>
-                            </div>
-
-                            <div class="col-md-6">
-                                <input type="email" class="form-control" name="email" placeholder="Email" required>
-                            </div>
-
-                            <div class="col-md-12">
-                                <input type="text" class="form-control" name="phone" placeholder="Nomor Telepon">
-                            </div>
-
-                            <div class="col-md-12">
-                                <input type="text" class="form-control" name="subject" placeholder="Subjek" required>
-                            </div>
-
-                            <div class="col-md-12">
-                                <textarea class="form-control" name="message" rows="6" placeholder="Pesan" required></textarea>
-                            </div>
-
-                            <div class="col-md-12 text-center">
-                                <div class="loading">Loading</div>
-                                <div class="error-message"></div>
-                                <div class="sent-message">Pesan Anda telah terkirim. Terima kasih!</div>
-
-                                <button type="submit">Kirim Pesan</button>
-                            </div>
+                    <!-- Form Pengaduan Card -->
+                    <div class="card border-0 shadow-sm mb-4" data-aos="fade-up" data-aos-delay="400">
+                        <div class="card-header bg-primary text-white py-3">
+                            <h4 class="mb-0"><i class="bi bi-megaphone me-2"></i>Form Pengaduan</h4>
+                            <p class="mb-0 small">Sampaikan keluhan, saran, atau pertanyaan Anda</p>
                         </div>
-                    </form>
+                        <div class="card-body">
+                            <form action="{{ route('complaint.submit') }}" method="post" class="php-email-form" id="complaintForm">
+                                @csrf
+                                <div class="row gy-3">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="name" class="form-label">Nama Lengkap <span class="text-danger">*</span></label>
+                                            <input type="text" name="name" id="name" class="form-control" 
+                                                   placeholder="Masukkan nama lengkap" required>
+                                            <div class="field-error text-danger small mt-1" style="display: none;"></div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="email" class="form-label">Email <span class="text-danger">*</span></label>
+                                            <input type="email" class="form-control" id="email" name="email" 
+                                                   placeholder="email@contoh.com" required>
+                                            <div class="field-error text-danger small mt-1" style="display: none;"></div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="phone" class="form-label">Telepon/WhatsApp</label>
+                                            <input type="text" class="form-control" id="phone" name="phone" 
+                                                   placeholder="0812-3456-7890">
+                                            <div class="field-error text-danger small mt-1" style="display: none;"></div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="type" class="form-label">Jenis Pengaduan <span class="text-danger">*</span></label>
+                                            <select name="type" id="type" class="form-control" required>
+                                                <option value="">-- Pilih Jenis --</option>
+                                                <option value="complaint">Keluhan / Masalah</option>
+                                                <option value="suggestion">Saran / Usulan</option>
+                                                <option value="question">Pertanyaan</option>
+                                            </select>
+                                            <div class="field-error text-danger small mt-1" style="display: none;"></div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-12">
+                                        <div class="form-group">
+                                            <label for="subject" class="form-label">Judul Pengaduan <span class="text-danger">*</span></label>
+                                            <input type="text" class="form-control" id="subject" name="subject" 
+                                                   placeholder="Ringkasan singkat pengaduan Anda" required>
+                                            <div class="field-error text-danger small mt-1" style="display: none;"></div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-12">
+                                        <div class="form-group">
+                                            <label for="message" class="form-label">Deskripsi Lengkap <span class="text-danger">*</span></label>
+                                            <textarea class="form-control" id="message" name="message" rows="5" 
+                                                      placeholder="Jelaskan pengaduan Anda secara detail..." required></textarea>
+                                            <small class="text-muted">Silakan jelaskan dengan jelas untuk memudahkan penanganan.</small>
+                                            <div class="character-counter text-muted small mt-1 text-end">
+                                                <span id="charCount">0</span>/2000 karakter
+                                            </div>
+                                            <div class="field-error text-danger small mt-1" style="display: none;"></div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-12">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" id="terms" required>
+                                            <label class="form-check-label" for="terms">
+                                                Saya setuju dengan <a href="#" class="text-primary" data-bs-toggle="modal" data-bs-target="#termsModal">syarat dan ketentuan</a> pengaduan
+                                            </label>
+                                            <div class="field-error text-danger small mt-1" style="display: none;"></div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-12">
+                                        <div class="loading alert" style="display: none;">                            
+                                        <div class="success-message alert alert-success" style="display: none;">
+                                            <div class="d-flex align-items-center">
+                                                <i class="bi bi-check-circle-fill me-2 fs-4"></i>
+                                                <div>
+                                                    <strong>Pengaduan berhasil dikirim!</strong><br>
+                                                    <small class="text-muted">Tim kami akan menghubungi Anda maksimal 3x24 jam.</small>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    </div>
+
+                                    <div class="col-12 text-center pt-3">
+                                        <button type="submit" class="btn btn-primary btn-lg px-5">
+                                            <i class="bi bi-send me-2"></i>Kirim Pengaduan
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div><!-- End Form Pengaduan Card -->
                 </div><!-- End Contact Form -->
             </div>
 
@@ -162,6 +234,47 @@
     </section><!-- /Contact Section -->
 
 </main>
+
+<!-- Terms Modal -->
+<div class="modal fade" id="termsModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title">Syarat dan Ketentuan Pengaduan</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <h6>1. Ketentuan Umum:</h6>
+                <ul>
+                    <li>Pengaduan akan diproses maksimal 3x24 jam kerja</li>
+                    <li>Harap memberikan informasi yang jelas, benar, dan lengkap</li>
+                    <li>Data pribadi Anda akan dijaga kerahasiaannya</li>
+                    <li>Pengaduan akan ditindaklanjuti sesuai dengan prosedur yang berlaku</li>
+                </ul>
+                
+                <h6>2. Proses Penanganan:</h6>
+                <ul>
+                    <li>Setelah pengaduan dikirim, Anda akan mendapat nomor tiket</li>
+                    <li>Gunakan nomor tiket untuk mengecek status pengaduan</li>
+                    <li>Tim kami akan menghubungi Anda melalui email atau telepon</li>
+                    <li>Lama penanganan tergantung kompleksitas masalah</li>
+                </ul>
+                
+                <h6>3. Informasi Penting:</h6>
+                <p>Simpan nomor tiket pengaduan untuk keperluan tracking status. Pastikan email dan nomor telepon yang Anda berikan aktif.</p>
+                
+                <div class="alert alert-info mt-3">
+                    <i class="bi bi-info-circle me-2"></i>
+                    <strong>Catatan:</strong> Pengaduan palsu atau mengandung unsur fitnah akan diproses sesuai hukum yang berlaku.
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Saya Mengerti</button>
+            </div>
+        </div>
+    </div>
+</div>
 @endsection
 
 @push('styles')
@@ -273,74 +386,149 @@
         text-align: center;
     }
 
-    /* Contact Form */
+    /* Form Pengaduan Styles */
+    .card .card-header.bg-primary {
+        border-radius: 8px 8px 0 0 !important;
+    }
+    
     .php-email-form {
         background: white;
-        padding: 40px;
-        border-radius: 10px;
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        padding: 0;
+        border-radius: 0;
+        box-shadow: none;
     }
-
-    .php-email-form .form-control {
+    
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+    
+    .form-label {
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+        color: #495057;
+    }
+    
+    .form-control, .form-select {
         padding: 12px 15px;
         border: 1px solid #ddd;
         border-radius: 5px;
-        margin-bottom: 20px;
+        margin-bottom: 5px;
         transition: all 0.3s;
     }
-
-    .php-email-form .form-control:focus {
+    
+    .form-control:focus, .form-select:focus {
         border-color: #007bff;
-        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
     }
-
-    .php-email-form textarea.form-control {
+    
+    .form-control::placeholder {
+        color: #6c757d;
+        opacity: 0.7;
+    }
+    
+    textarea.form-control {
         min-height: 150px;
         resize: vertical;
     }
-
-    .php-email-form button[type="submit"] {
-        background: #007bff;
-        color: white;
+    
+    .field-error {
+        font-size: 0.875rem;
+    }
+    
+    /* Loading animation */
+    .loading .spinner-border {
+        width: 1rem;
+        height: 1rem;
+    }
+    
+    /* Alert messages */
+    .alert {
+        border-radius: 8px;
+        border: none;
+        margin-bottom: 1rem;
+    }
+    
+    .alert-success {
+        background-color: #d1e7dd;
+        color: #0f5132;
+        border-left: 4px solid #198754;
+    }
+    
+    .alert-info {
+        background-color: #cff4fc;
+        color: #055160;
+        border-left: 4px solid #0dcaf0;
+    }
+    
+    /* Button styles */
+    .btn-primary {
+        background: linear-gradient(135deg, #0d6efd 0%, #0a58ca 100%);
         border: none;
         padding: 12px 40px;
         border-radius: 5px;
         font-size: 1rem;
         font-weight: 500;
         cursor: pointer;
-        transition: background 0.3s;
+        transition: all 0.3s;
     }
-
-    .php-email-form button[type="submit"]:hover {
+    
+    .btn-primary:hover {
         background: #0056b3;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(13, 110, 253, 0.3);
     }
-
-    .php-email-form .loading,
-    .php-email-form .error-message,
-    .php-email-form .sent-message {
-        display: none;
-        text-align: center;
-        padding: 15px;
-        margin-bottom: 15px;
-        border-radius: 5px;
-        font-weight: 500;
+    
+    .btn-lg {
+        padding: 12px 40px;
+        font-size: 1.1rem;
     }
-
-    .php-email-form .loading {
-        background: #f8f9fa;
-        color: #495057;
+    
+    /* Character counter */
+    .character-counter {
+        margin-top: 0.25rem;
     }
-
-    .php-email-form .error-message {
-        background: #dc3545;
-        color: white;
+    
+    #charCount {
+        font-weight: bold;
     }
-
-    .php-email-form .sent-message {
-        background: #28a745;
-        color: white;
+    
+    #charCount.text-success {
+        color: #198754 !important;
     }
-
+    
+    #charCount.text-warning {
+        color: #ffc107 !important;
+    }
+    
+    #charCount.text-danger {
+        color: #dc3545 !important;
+    }
+    
+    /* Terms checkbox */
+    .form-check-input:checked {
+        background-color: #0d6efd;
+        border-color: #0d6efd;
+    }
+    
+    .form-check-input:focus {
+        border-color: #86b7fe;
+        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+    }
+    
+    /* Modal styles */
+    .modal-content {
+        border-radius: 12px;
+        overflow: hidden;
+    }
+    
+    .modal-header.bg-primary {
+        padding: 1.25rem 1.5rem;
+    }
+    
+    .btn-close-white {
+        filter: invert(1) grayscale(100%) brightness(200%);
+    }
+    
     /* Google Maps */
     iframe {
         border-radius: 10px;
@@ -384,16 +572,25 @@
             margin-bottom: 15px;
         }
 
-        .php-email-form {
-            padding: 30px 20px;
+        .card-body {
+            padding: 20px;
         }
-
+        
+        .btn-lg {
+            padding: 10px 30px;
+            font-size: 1rem;
+        }
+        
         .breadcrumbs ol {
             font-size: 0.9rem;
         }
 
         .card-body {
             padding: 20px 15px;
+        }
+        
+        .modal-body {
+            padding: 1rem;
         }
     }
 
@@ -410,11 +607,11 @@
             font-size: 1.25rem;
         }
 
-        .php-email-form {
-            padding: 20px 15px;
+        .card-body {
+            padding: 15px;
         }
 
-        .php-email-form button[type="submit"] {
+        .btn-primary {
             padding: 10px 30px;
             font-size: 0.9rem;
         }
@@ -422,14 +619,25 @@
         .section-title h2 {
             font-size: 1.75rem;
         }
+        
+        .php-email-form .col-md-6 {
+            margin-bottom: 0;
+        }
+    }
+    
+    @media (max-width: 400px) {
+        .btn-lg {
+            width: 100%;
+            padding: 12px;
+        }
     }
 </style>
 @endpush
 
 @push('scripts')
 <script>
-    // AOS initialization
     document.addEventListener('DOMContentLoaded', function() {
+        // AOS initialization
         if (typeof AOS !== 'undefined') {
             AOS.init({
                 duration: 800,
@@ -439,40 +647,171 @@
             });
         }
 
-        // Contact form handling
-        const contactForm = document.getElementById('contactForm');
-        if (contactForm) {
-            contactForm.addEventListener('submit', function(e) {
-                e.preventDefault();
+        // Complaint form handling dengan delay untuk testing
+const complaintForm = document.getElementById('complaintForm');
+if (complaintForm) {
+    complaintForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const form = this;
+        const loading = form.querySelector('.loading');
+        const successMessage = form.querySelector('.success-message');
+        const submitButton = form.querySelector('button[type="submit"]');
+        
+        // Validasi
+        let isValid = true;
+        form.querySelectorAll('[required]').forEach(field => {
+            if (!field.value.trim()) {
+                isValid = false;
+                field.classList.add('is-invalid');
+            }
+        });
+        
+        if (!form.querySelector('#terms').checked) {
+            isValid = false;
+            form.querySelector('#terms').classList.add('is-invalid');
+            alert('Setujui syarat & ketentuan');
+            return;
+        }
+        
+        if (!isValid) {
+            alert('Lengkapi semua field wajib');
+            return;
+        }
+        
+        // Tampilkan loading
+        loading.style.display = 'block';
+        successMessage.style.display = 'none';
+        submitButton.disabled = true;
+        
+        // Simulasi delay 2 detik untuk testing
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        
+        try {
+            // Kirim form
+            const response = await fetch(form.action, {
+                method: 'POST',
+                body: new FormData(form)
+            });
+            
+            const data = await response.json();
+            
+            // HIDE LOADING - INI YANG PENTING!
+            loading.style.display = 'none';
+            submitButton.disabled = false;
+            
+            if (data.success) {
+                // Tampilkan sukses
+                successMessage.style.display = 'block';
+                successMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 
-                const form = this;
-                const loading = form.querySelector('.loading');
-                const errorMessage = form.querySelector('.error-message');
-                const sentMessage = form.querySelector('.sent-message');
+                // Reset form
+                form.reset();
+                form.querySelector('#terms').checked = false;
                 
-                // Show loading
-                loading.style.display = 'block';
-                errorMessage.style.display = 'none';
-                sentMessage.style.display = 'none';
+                // Reset counter
+                const counter = document.getElementById('charCount');
+                if (counter) counter.textContent = '0';
                 
-                // Simulate form submission
-                setTimeout(() => {
-                    // Hide loading
-                    loading.style.display = 'none';
-                    
-                    // Show success message
-                    sentMessage.style.display = 'block';
-                    
-                    // Reset form after 3 seconds
-                    setTimeout(() => {
-                        form.reset();
-                        sentMessage.style.display = 'none';
-                    }, 3000);
-                }, 1500);
+                // Auto hide
+                setTimeout(() => successMessage.style.display = 'none', 10000);
+                
+            } else {
+                alert('Error: ' + (data.message || 'Unknown'));
+            }
+            
+        } catch (error) {
+            console.error('Error:', error);
+            // HIDE LOADING MESKIPUN ERROR!
+            loading.style.display = 'none';
+            submitButton.disabled = false;
+            alert('Network error');
+        }
+    });
+}
+        // Character counter untuk message field
+        const messageField = document.getElementById('message');
+        if (messageField) {
+            messageField.addEventListener('input', function() {
+                const charCount = document.getElementById('charCount');
+                const currentLength = this.value.length;
+                charCount.textContent = currentLength;
+                
+                // Ubah warna jika mendekati limit
+                if (currentLength > 1800) {
+                    charCount.className = 'text-warning';
+                } else if (currentLength > 1900) {
+                    charCount.className = 'text-danger';
+                } else if (currentLength > 0) {
+                    charCount.className = 'text-success';
+                } else {
+                    charCount.className = '';
+                }
             });
         }
 
-        // Smooth scrolling for anchor links
+        // Format nomor telepon
+        const phoneInput = document.getElementById('phone');
+        if (phoneInput) {
+            phoneInput.addEventListener('input', function(e) {
+                let value = this.value.replace(/\D/g, '');
+                if (value.length > 0) {
+                    // Format: 0812-3456-7890
+                    if (value.length <= 4) {
+                        value = value;
+                    } else if (value.length <= 8) {
+                        value = value.replace(/(\d{4})(\d+)/, '$1-$2');
+                    } else {
+                        value = value.replace(/(\d{4})(\d{4})(\d+)/, '$1-$2-$3');
+                    }
+                }
+                this.value = value.substring(0, 14);
+            });
+        }
+
+        // Validasi real-time
+        const validateField = (field) => {
+            const value = field.value.trim();
+            const errorElement = field.closest('.form-group')?.querySelector('.field-error');
+            
+            if (!errorElement) return true;
+            
+            if (field.hasAttribute('required') && !value) {
+                errorElement.textContent = 'Field ini wajib diisi';
+                errorElement.style.display = 'block';
+                field.classList.add('is-invalid');
+                return false;
+            }
+            
+            if (field.type === 'email' && value) {
+                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                if (!emailRegex.test(value)) {
+                    errorElement.textContent = 'Format email tidak valid';
+                    errorElement.style.display = 'block';
+                    field.classList.add('is-invalid');
+                    return false;
+                }
+            }
+            
+            errorElement.style.display = 'none';
+            field.classList.remove('is-invalid');
+            return true;
+        };
+
+        // Tambahkan listener validasi
+        const formFields = document.querySelectorAll('#complaintForm input, #complaintForm textarea, #complaintForm select');
+        formFields.forEach(field => {
+            field.addEventListener('blur', () => validateField(field));
+            field.addEventListener('input', () => {
+                const errorElement = field.closest('.form-group')?.querySelector('.field-error');
+                if (errorElement) {
+                    errorElement.style.display = 'none';
+                    field.classList.remove('is-invalid');
+                }
+            });
+        });
+
+        // Smooth scrolling untuk link anchor
         document.querySelectorAll('a[href^="#"]').forEach(anchor => {
             anchor.addEventListener('click', function(e) {
                 e.preventDefault();
@@ -488,48 +827,14 @@
                 }
             });
         });
-
-        // Phone number formatting
-        const phoneInputs = document.querySelectorAll('input[name="phone"]');
-        phoneInputs.forEach(input => {
-            input.addEventListener('input', function(e) {
-                let value = this.value.replace(/\D/g, '');
-                if (value.length > 3 && value.length <= 7) {
-                    value = value.replace(/(\d{3})(\d+)/, '$1-$2');
-                } else if (value.length > 7 && value.length <= 11) {
-                    value = value.replace(/(\d{3})(\d{4})(\d+)/, '$1-$2-$3');
-                } else if (value.length > 11) {
-                    value = value.replace(/(\d{3})(\d{4})(\d{4})/, '$1-$2-$3');
-                }
-                this.value = value;
-            });
-        });
     });
 
-    // Real form submission with AJAX
-    async function submitContactForm(form) {
-        const formData = new FormData(form);
-        
-        try {
-            const response = await fetch(form.action, {
-                method: 'POST',
-                headers: {
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                    'Accept': 'application/json'
-                },
-                body: formData
-            });
-            
-            const data = await response.json();
-            
-            if (response.ok) {
-                return { success: true, message: data.message || 'Pesan berhasil dikirim!' };
-            } else {
-                return { success: false, message: data.message || 'Terjadi kesalahan. Silakan coba lagi.' };
-            }
-        } catch (error) {
-            return { success: false, message: 'Koneksi internet bermasalah. Silakan coba lagi.' };
-        }
-    }
+    // Bootstrap tooltip initialization
+    document.addEventListener('DOMContentLoaded', function() {
+        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+    });
 </script>
 @endpush
