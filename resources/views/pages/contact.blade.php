@@ -30,9 +30,9 @@
                         data-aos="fade-up" data-aos-delay="200">
                         <i class="bi bi-geo-alt"></i>
                         <h3>Alamat</h3>
-                        <p class="center">Jl. Kapt. P. Tendean Kav 12 No. 14A<br />
-                            RT 002 RW 002, Mampang Prapatan<br />
-                            Jakarta Selatan, DKI Jakarta
+                        <p class="center">Jl. Raya Bantar Jati Komp. Primkopti Blok C6 No.10<br />
+                           Keluarahan Setu, Kecamatan Cipayung<br />
+                            Jakarta Timur, DKI Jakarta
                         </p>
                     </div>
                 </div><!-- End Info Item -->
@@ -42,7 +42,7 @@
                         data-aos="fade-up" data-aos-delay="300">
                         <i class="bi bi-telephone"></i>
                         <h3>Telepon</h3>
-                        <p>0812 1285 8685</p>
+                        <p>0823-1111-3735</p>
                     </div>
                 </div><!-- End Info Item -->
 
@@ -60,7 +60,7 @@
                 <div class="col-lg-6" data-aos="fade-up" data-aos-delay="300">
                     <!-- Google Maps -->
                     <iframe
-                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3966.521260322283!2d106.8195613506864!3d-6.200741395493371!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e69f5390917b759%3A0x6b45e67356080477!2sPT%20Jasa%20Swadaya%20Utama%20(PT%20JSU%20-%20Jayatama)!5e0!3m2!1sen!2sid!4v1647858256787!5m2!1sen!2sid"
+                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3960.94624484775!2d106.917902!3d-6.3105931!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e6992b1321df46d%3A0xcf24ea93ebc6dd27!2sPT.%20Jasa%20Swadaya%20Utama!5e0!3m2!1sen!2sid!4v1234567890"
                         width="100%" height="400" style="border:0;" allowfullscreen="" loading="lazy"
                         referrerpolicy="no-referrer-when-downgrade"></iframe>
                 </div><!-- End Google Maps -->
@@ -69,7 +69,7 @@
                     <!-- Form Pengaduan Card -->
                     <div class="card border-0 shadow-sm mb-4" data-aos="fade-up" data-aos-delay="400">
                         <div class="card-header bg-primary text-white py-3">
-                            <h4 class="mb-0"><i class="bi bi-megaphone me-2"></i>Form Pengaduan</h4>
+                            <h4 class="mb-0 text-white"><i class="bi bi-megaphone me-2"></i>Form Pengaduan</h4>
                             <p class="mb-0 small">Sampaikan keluhan, saran, atau pertanyaan Anda</p>
                         </div>
                         <div class="card-body">
@@ -187,9 +187,9 @@
                             <div class="card border-0 shadow-sm h-100">
                                 <div class="card-body text-center">
                                     <i class="bi bi-geo-alt-fill display-4 text-primary mb-3"></i>
-                                    <h5>Jakarta Pusat</h5>
+                                    <h5>Jakarta Selatan</h5>
                                     <p class="small">Jl. Kapt. P. Tendean Kav 12 No. 14A</p>
-                                    <p class="small mb-0">Telp: (021) 5795-1234</p>
+                                    <p class="small mb-0">Email: info@jayatama.id</p>
                                 </div>
                             </div>
                         </div>
@@ -198,33 +198,12 @@
                             <div class="card border-0 shadow-sm h-100">
                                 <div class="card-body text-center">
                                     <i class="bi bi-geo-alt-fill display-4 text-success mb-3"></i>
-                                    <h5>Bandung</h5>
-                                    <p class="small">Jl. Soekarno Hatta No. 789</p>
-                                    <p class="small mb-0">Telp: (022) 756-7890</p>
+                                    <h5>Jakarta Timur</h5>
+                                    <p class="small">Jl. Raya Bantar Jati Komp. Primkopti Blok C6 No.10</p>
+                                    <p class="small mb-0">Email: info@jayatama.id</p>
                                 </div>
                             </div>
                         </div>
-
-                        <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="300">
-                            <div class="card border-0 shadow-sm h-100">
-                                <div class="card-body text-center">
-                                    <i class="bi bi-geo-alt-fill display-4 text-warning mb-3"></i>
-                                    <h5>Surabaya</h5>
-                                    <p class="small">Jl. Raya Darmo No. 456</p>
-                                    <p class="small mb-0">Telp: (031) 567-8901</p>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="400">
-                            <div class="card border-0 shadow-sm h-100">
-                                <div class="card-body text-center">
-                                    <i class="bi bi-geo-alt-fill display-4 text-info mb-3"></i>
-                                    <h5>Medan</h5>
-                                    <p class="small">Jl. Gatot Subroto No. 123</p>
-                                    <p class="small mb-0">Telp: (061) 234-5678</p>
-                                </div>
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -240,7 +219,7 @@
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header bg-primary text-white">
-                <h5 class="modal-title">Syarat dan Ketentuan Pengaduan</h5>
+                <h5 class="modal-title text-white">Syarat dan Ketentuan Pengaduan</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
